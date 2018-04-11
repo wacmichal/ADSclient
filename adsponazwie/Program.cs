@@ -19,16 +19,15 @@ namespace ADS
             int iValue = 0;
             int exValue = 0;
             string variable, adres;
-
+ DateTime now = DateTime.Now;
             Console.WriteLine("Podaj adres serwera ADS: ");
             adres = Console.ReadLine();
             Console.WriteLine("Podaj  nazwe zmienna do zapysywania w bazie danych: ");
             variable = Console.ReadLine();
             FileStream File = new FileStream("data.txt", FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter writer = new StreamWriter(File);
-            writer.WriteLine(adres + "  801  " + variable);
+            writer.WriteLine(adres + "  801  " + variable + "    " + now.ToString("F"));
 
-            writer.Close();
             try
             {
 
@@ -37,14 +36,14 @@ namespace ADS
                 handle = tcClient.CreateVariableHandle(variable);
 
                 Console.WriteLine("Czekam na znak");
-
+               
                 do
                 {
                     tcClient.Read(handle, dataStream);
                     iValue = binReader.ReadInt32();
                     dataStream.Position = 0;
                     if (iValue != exValue)
-                        writer.WriteLine(iValue);
+                        writer.WriteLine(iValue + "    " + now.ToString("F"));
 
                     Console.WriteLine("Aktualna wartosc wynosi: " + iValue);
 
@@ -58,9 +57,11 @@ namespace ADS
             }
             finally
             {
-             
+             writer.Close();
                tcClient.DeleteVariableHandle(handle);
                  tcClient.Dispose();
+
+                
             }
             Console.ReadKey();
         }
